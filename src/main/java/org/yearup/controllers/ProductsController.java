@@ -81,7 +81,8 @@ public class ProductsController
     {
         try
         {
-            productDao.create(product);
+            product.setProductId(id); // Ensure the product has the correct ID
+            productDao.update(id, product); // Changed create to update and added id as a parameter
         }
         catch(Exception ex)
         {
