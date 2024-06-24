@@ -2,7 +2,6 @@ package org.yearup.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -39,56 +38,66 @@ public class ProductsController {
 
     @GetMapping("{id}")
     @PreAuthorize("permitAll()")
-    public Product getById(@PathVariable int id) {
-        try {
+    public Product getById(@PathVariable int id )
+    {
+        try
+        {
             var product = productDao.getById(id);
 
-            if (product == null)
+            if(product == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
             return product;
-        } catch (Exception ex) {
+        }
+        catch(Exception ex)
+        {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
     }
 
     @PostMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    // Changed return type from Product to ResponseEntity<Product>
-    // This allows us to control both the response body and the HTTP status code
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
-        try {
-            Product createdProduct = productDao.create(product);
-
-            // Changed from directly returning the product to returning a ResponseEntity
-            // This allows us to specify the HTTP status code (201 Created) along with the response body
-            return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
-        } catch (Exception ex) {
+    public Product addProduct(@RequestBody Product product)
+    {
+        try
+        {
+            return productDao.create(product);
+        }
+        catch(Exception ex)
+        {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
     }
 
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void updateProduct(@PathVariable int id, @RequestBody Product product) {
-        try {
+    public void updateProduct(@PathVariable int id, @RequestBody Product product)
+    {
+        try
+        {
             productDao.update(id, product); // Changed create to update and added id as a parameter
-        } catch (Exception ex) {
+        }
+        catch(Exception ex)
+        {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
     }
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void deleteProduct(@PathVariable int id) {
-        try {
+    public void deleteProduct(@PathVariable int id)
+    {
+        try
+        {
             var product = productDao.getById(id);
 
-            if (product == null)
+            if(product == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
             productDao.delete(id);
-        } catch (Exception ex) {
+        }
+        catch(Exception ex)
+        {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
     }
