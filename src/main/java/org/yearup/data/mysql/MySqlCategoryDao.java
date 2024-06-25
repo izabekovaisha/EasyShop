@@ -31,15 +31,15 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                int categoryId = resultSet.getInt("CategoryId");
-                String name = resultSet.getString("Name");
-                String description = resultSet.getString("Description");
+                int categoryId = resultSet.getInt("category_id");
+                String name = resultSet.getString("name");
+                String description = resultSet.getString("description");
 
                 Category category = new Category(categoryId, name, description);
                 categories.add(category);
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving shippers: " + e.getMessage());
+            System.err.println("Error retrieving categories: " + e.getMessage());
             e.printStackTrace();
         }
         return categories;
