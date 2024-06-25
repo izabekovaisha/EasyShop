@@ -31,11 +31,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                int categoryId = resultSet.getInt("category_id");
-                String name = resultSet.getString("name");
-                String description = resultSet.getString("description");
-
-                Category category = new Category(categoryId, name, description);
+                Category category = mapRow(resultSet);
                 categories.add(category);
             }
         } catch (SQLException e) {
@@ -86,9 +82,9 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
                 ResultSet generatedKeys = statement.getGeneratedKeys();
 
                 if (generatedKeys.next()) {
-                    int orderId = generatedKeys.getInt(1);
+                    int categoryId = generatedKeys.getInt(1);
 
-                    return getById(orderId);
+                    return getById(categoryId);
                 }
             }
         }
