@@ -30,7 +30,6 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public Category getById(int categoryId)
     {
-        // get category by id
             String sql = "SELECT * FROM categories WHERE category_id = ?";
             try (Connection connection = getConnection())
             {
@@ -54,7 +53,6 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public Category create(Category category)
     {
-        // create a new category
         String sql = "INSERT INTO categories(name, description) " +
                 " VALUES (?, ?);";
 
@@ -86,7 +84,6 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public void update(int categoryId, Category category)
     {
-        // update category
         String sql = "UPDATE categories" +
                 " SET name = ? " +
                 "   , description = ? " +
