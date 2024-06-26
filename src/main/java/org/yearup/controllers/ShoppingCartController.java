@@ -50,8 +50,6 @@ public class ShoppingCartController
         }
     }
 
-    // https://localhost:8080/cart/products/15 (15 is the productId to be added
-
     @PostMapping("products/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public void addToCart(@PathVariable int productId, Principal principal)
@@ -78,11 +76,30 @@ public class ShoppingCartController
             throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
     }
-    // add a PUT method to update an existing product in the cart - the url should be
-    // https://localhost:8080/cart/products/15 (15 is the productId to be updated)
-    // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated
-// each method in this controller requires a Principal object as a parameter
 
+    @PutMapping("products/{id}")
+            public void updateCartItem(@PathVariable int productId, @RequestBody ShoppingCartItem item, Principal principal)
+    {
+        try
+        {
+            String userName = principal.getName();
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
+
+            Product product = productDao.getById(productId);
+            if (product == null )
+            {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+
+            item.setProduct(product);
+            shoppingCartDao.updateItem(userId, item);
+        }
+        catch (Exception e)
+        {
+            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+        }
+    }
     // add a DELETE method to clear all products from the current users cart
     // https://localhost:8080/cart
 // each method in this controller requires a Principal object as a parameter
