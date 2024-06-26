@@ -79,7 +79,6 @@ public class CategoriesController {
 
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-
     public void updateCategory(@PathVariable int id, @RequestBody Category category) {
         {
             try {
