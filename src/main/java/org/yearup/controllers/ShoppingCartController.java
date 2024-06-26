@@ -15,13 +15,12 @@ import org.yearup.models.User;
 
 import java.security.Principal;
 
-// only logged in users should have access to these actions
 @RestController
 @RequestMapping("cart")
-@PreAuthorize
+@PreAuthorize("hasRole('ROLE_USER')")
+@CrossOrigin
 public class ShoppingCartController
 {
-    // a shopping cart requires
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
     private ProductDao productDao;
@@ -46,7 +45,7 @@ public class ShoppingCartController
         }
         catch (Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving shopping cart.");
         }
     }
 
@@ -73,7 +72,7 @@ public class ShoppingCartController
         }
         catch (Exception e)
         {
-            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error adding product to cart.");
         }
     }
 
@@ -97,10 +96,25 @@ public class ShoppingCartController
         }
         catch (Exception e)
         {
-            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating cart item.");
         }
     }
-    // add a DELETE method to clear all products from the current users cart
-    // https://localhost:8080/cart
-// each method in this controller requires a Principal object as a parameter
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void clearCart(Principal principal)
+    {
+        try
+        {
+            String userName = principal.getName();
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
+
+            shoppingCartDao.clearCart(userId);
+        }
+        catch (Exception e)
+        {
+            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error clearing shopping cart.");
+        }
+    }
 }

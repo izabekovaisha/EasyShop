@@ -8,4 +8,5 @@ public interface ShoppingCartDao
     ShoppingCart getByUserId(int userId);
     void addItem(int userId, ShoppingCartItem item);
     void updateItem(int userId, ShoppingCartItem item);
+    void clearCart(int userId);
 }
