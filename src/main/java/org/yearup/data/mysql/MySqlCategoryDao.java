@@ -35,7 +35,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
                 categories.add(category);
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving categories: " + e.getMessage());
+            System.err.println("Error retrieving categories.");
             e.printStackTrace();
         }
         return categories;

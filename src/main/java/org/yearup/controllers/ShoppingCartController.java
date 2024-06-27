@@ -50,7 +50,6 @@ public class ShoppingCartController
     }
 
     @PostMapping("products/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
     public void addToCart(@PathVariable int productId, Principal principal)
     {
         try
