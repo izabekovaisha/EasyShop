@@ -1,7 +1,6 @@
 package org.yearup.data.mysql;
 
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.ShoppingCartDao;
 import org.yearup.models.Product;
 import org.yearup.models.ShoppingCart;
@@ -29,6 +28,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
         try (Connection connection = getConnection();
         PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, userId);
             statement.setInt(2, productId);
 
@@ -53,6 +53,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, userId);
             statement.setInt(2, productId);
 
@@ -75,8 +76,11 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
     @Override
     public ShoppingCart addProduct(int userId, int productId, int quantity) {
         if (hasProduct(userId, productId)) {
+
             int currentQuantity = getQuantity(userId, productId);
+
             return updateProductQuantity(userId, productId, currentQuantity + quantity);
+
         } else {
             String sql = """
                     INSERT INTO shopping_cart (user_id, product_id, quantity)
@@ -85,9 +89,11 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
             try (Connection connection = getConnection();
                  PreparedStatement statement = connection.prepareStatement(sql)) {
+
                 statement.setInt(1, userId);
                 statement.setInt(2, productId);
                 statement.setInt(3, quantity);
+
                 statement.executeUpdate();
 
             } catch (SQLException e) {
@@ -107,9 +113,11 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, quantity);
             statement.setInt(2, userId);
             statement.setInt(3, productId);
+
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -127,8 +135,10 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, userId);
             statement.setInt(2, productId);
+
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -139,7 +149,22 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
     @Override
     public ShoppingCart clearCart(int userId) {
-        return null;
+        String sql = """
+                    DELETE FROM shopping_cart
+                    WHERE user_id = ?
+                    """;
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, userId);
+
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return new ShoppingCart();
     }
 
     @Override
@@ -153,18 +178,21 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, userId);
+
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 ShoppingCartItem item = new ShoppingCartItem();
+
                 Product product = MySqlProductDao.mapRow(resultSet);
 
+                item.setProduct(product);
+                item.setQuantity(resultSet.getInt("quantity"));
 
-
-
+                cart.add(item);
             }
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
