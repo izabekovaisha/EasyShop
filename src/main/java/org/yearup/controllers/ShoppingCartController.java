@@ -8,16 +8,14 @@ import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.ProductDao;
 import org.yearup.data.ShoppingCartDao;
 import org.yearup.data.UserDao;
-import org.yearup.models.Product;
 import org.yearup.models.ShoppingCart;
-import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 
 import java.security.Principal;
 
 @RestController
 @RequestMapping("cart")
-@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')") // Ensures only authenticated users can access cart endpoints
 @CrossOrigin
 public class ShoppingCartController
 {
@@ -37,9 +35,9 @@ public class ShoppingCartController
     {
         try
         {
-            String userName = principal.getName();
-            User user = userDao.getByUserName(userName);
-            int userId = user.getId();
+            String userName = principal.getName(); // Get the currently logged-in username
+            User user = userDao.getByUserName(userName); // Find the user by username
+            int userId = user.getId(); // Get the user's ID
 
             return shoppingCartDao.getByUserId(userId);
         }
@@ -50,7 +48,7 @@ public class ShoppingCartController
     }
 
     @PostMapping("products/{id}")
-    public void addToCart(@PathVariable int productId, Principal principal)
+    public ShoppingCart addToCart(@PathVariable int id, Principal principal)
     {
         try
         {
@@ -58,16 +56,7 @@ public class ShoppingCartController
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
 
-            Product product = productDao.getById(productId);
-            if (product == null )
-            {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-            }
-            ShoppingCartItem item = new ShoppingCartItem();
-            item.setProduct(product);
-            item.setQuantity(1);
-
-            shoppingCartDao.addItem(userId, item);
+            return shoppingCartDao.addProduct(userId, id);
         }
         catch (Exception e)
         {
@@ -76,7 +65,7 @@ public class ShoppingCartController
     }
 
     @PutMapping("products/{id}")
-            public void updateCartItem(@PathVariable int productId, @RequestBody ShoppingCartItem item, Principal principal)
+            public ShoppingCart updateCartItem(@PathVariable int id, @RequestBody int quantity, Principal principal)
     {
         try
         {
@@ -84,14 +73,7 @@ public class ShoppingCartController
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
 
-            Product product = productDao.getById(productId);
-            if (product == null )
-            {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-            }
-
-            item.setProduct(product);
-            shoppingCartDao.updateItem(userId, item);
+           return shoppingCartDao.updateProductQuantity(userId, id, quantity);
         }
         catch (Exception e)
         {
@@ -99,9 +81,8 @@ public class ShoppingCartController
         }
     }
 
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void clearCart(Principal principal)
+    @DeleteMapping("products/{id}")
+    public ShoppingCart removeFromCart(@PathVariable int id, Principal principal)
     {
         try
         {
@@ -109,7 +90,24 @@ public class ShoppingCartController
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
 
-            shoppingCartDao.clearCart(userId);
+            return shoppingCartDao.removeProduct(userId, id);
+        }
+        catch (Exception e)
+        {
+            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error removing product from cart.");
+        }
+    }
+
+    @DeleteMapping
+    public ShoppingCart clearCart(Principal principal)
+    {
+        try
+        {
+            String userName = principal.getName();
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
+
+            return shoppingCartDao.clearCart(userId);
         }
         catch (Exception e)
         {

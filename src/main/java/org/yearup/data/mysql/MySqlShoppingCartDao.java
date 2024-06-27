@@ -19,6 +19,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         super(dataSource);
     }
 
+    // Checks if a product exists in the user's shopping cart
     @Override
     public boolean hasProduct(int userId, int productId) {
         String sql = """
@@ -34,12 +35,14 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
             ResultSet resultSet = statement.executeQuery();
 
+            // Check if there is a result and return true if count > 0
             if (resultSet.next()) {
                 return resultSet.getInt(1) > 0;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        // return false if no result or error occurred
         return false;
     }
 
@@ -59,29 +62,35 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
             ResultSet resultSet = statement.executeQuery();
 
+            // If a result is found, return the quantity
             if (resultSet.next()) {
                 return resultSet.getInt("quantity");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        // Return 0 if no result found or error occurred
         return 0;
     }
 
+    // Add a product to the shopping cart with default quantity of 1
     @Override
     public ShoppingCart addProduct(int userId, int productId) {
         return addProduct(userId, productId, 1);
     }
 
+    // Add a product to the shopping cart with specified quantity
     @Override
     public ShoppingCart addProduct(int userId, int productId, int quantity) {
+        // Checks if the product is already in the cart
         if (hasProduct(userId, productId)) {
 
+            // If product exists, update the quantity
             int currentQuantity = getQuantity(userId, productId);
-
             return updateProductQuantity(userId, productId, currentQuantity + quantity);
 
         } else {
+            // If product doesn't exist, insert a new record
             String sql = """
                     INSERT INTO shopping_cart (user_id, product_id, quantity)
                     VALUES (?, ?, ?)
@@ -100,6 +109,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
                 throw new RuntimeException(e);
             }
         }
+        // Return the updated shopping cart
         return getByUserId(userId);
     }
 
@@ -123,6 +133,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        // Return the updated shopping cart
         return getByUserId(userId);
     }
 
@@ -144,6 +155,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        // Return the updated shopping cart
         return getByUserId(userId);
     }
 
@@ -164,12 +176,15 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        // Return the empty shopping cart
         return new ShoppingCart();
     }
 
+    // Get the shopping cart for a specific user
     @Override
     public ShoppingCart getByUserId(int userId) {
         ShoppingCart cart = new ShoppingCart();
+        // SQL query to join 'shopping_cart' and 'products' tables
         String sql = """ 
                 SELECT * FROM shopping_cart
                 JOIN products ON shopping_cart.product_id = products.product_id
@@ -183,12 +198,18 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
             ResultSet resultSet = statement.executeQuery();
 
+            // Iterate through results and build the shopping cart
             while (resultSet.next()) {
                 ShoppingCartItem item = new ShoppingCartItem();
 
+                // Create a new Product object from the database result
                 Product product = MySqlProductDao.mapRow(resultSet);
 
+                // Set the product for this shopping cart item
                 item.setProduct(product);
+
+                // Set the quantity of this product in the shopping cart
+                // The quantity is retrieved from the 'quantity' column in the database
                 item.setQuantity(resultSet.getInt("quantity"));
 
                 cart.add(item);

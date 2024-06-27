@@ -13,5 +13,4 @@ public interface ShoppingCartDao
     ShoppingCart removeProduct(int userId, int productId);
     ShoppingCart clearCart(int userId);
     ShoppingCart getByUserId(int userId);
-
 }
