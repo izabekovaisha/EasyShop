@@ -106,6 +106,8 @@ products, add items to your cart, and perform other actions as implemented.
 
 Here's a GIF demonstration of the EasyShop web application in action:
 
+![ezgif com-optimize](https://github.com/izabekovaisha/EasyShop/assets/166551874/cd0cc395-66db-45e7-8856-fd147fae68bf)
+
 ## API Endpoints
 
 **User Authentication**
@@ -207,6 +209,8 @@ token for a regular user. You'll need to obtain these tokens by logging in with 
 ### Postman Test Results
 
 Here's a GIF demonstration of all passed requests in Postman, showing that the API endpoints are working correctly:
+
+![ScreenRecording2024-06-27154317-ezgif com-video-to-gif-converter](https://github.com/izabekovaisha/EasyShop/assets/166551874/32d78cbb-3daa-4fae-9f9c-1972a187b465)
 
 **Note:** The Postman collection 'easyshop-optional-solo' includes some tests that fail. These failures are related to
 the user profile and checkout phases, which were optional features not implemented in this version of the application.
