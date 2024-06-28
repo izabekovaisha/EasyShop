@@ -24,7 +24,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
     public boolean hasProduct(int userId, int productId) {
         String sql = """
                 SELECT COUNT(*) FROM shopping_cart
-                WHERE user_id = ? AND product_id
+                WHERE user_id = ? AND product_id = ?
                 """;
 
         try (Connection connection = getConnection();
@@ -51,7 +51,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         String sql = """
                 SELECT quantity
                 FROM shopping_cart
-                WHERE user_id = ? AND product_id
+                WHERE user_id = ? AND product_id = ?
                 """;
 
         try (Connection connection = getConnection();

@@ -61,7 +61,7 @@ public class CategoriesController {
         try {
             return productDao.listByCategoryId(categoryId);
         } catch (Exception ex) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving products with ID " + categoryId);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving products with ID.");
         }
     }
 

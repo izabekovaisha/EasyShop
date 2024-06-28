@@ -15,7 +15,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("cart")
-@PreAuthorize("hasRole('ROLE_USER')") // Ensures only authenticated users can access cart endpoints
+@PreAuthorize("isAuthenticated()") // Ensures only authenticated users can access cart endpoints
 @CrossOrigin
 public class ShoppingCartController
 {
@@ -60,7 +60,7 @@ public class ShoppingCartController
         }
         catch (Exception e)
         {
-            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error adding product to cart.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error adding product to cart.");
         }
     }
 
